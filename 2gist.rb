@@ -1,8 +1,4 @@
 require 'docopt'
-require 'pp'
-require 'net/http'
-require 'uri'
-require 'json'
 
 
 doc = <<DOCOPT
@@ -13,21 +9,41 @@ Usage:
 
 DOCOPT
 
+module 2Gist
+  
+  class 2Gist
+  
+    def initialize
+    end
+
+    def list
+      @gist
+    end
+
+    def create(file)
+      @gist.create_gist()
+    end
+
+    def connect(user, pass)
+      @user = User(user, pass)
+      unless @user.has_token?
+        @user.get_auth
+      end
+
+    end
+    
+  end
+
+end
+
 begin
-  pp Docopt::docopt(doc)
+  args = Docopt::docopt(doc)
+  if(args['username'])
+    2Gist::2Gist.connect(args['username'], args['password'])
+  elsif(args['file'])
+    2Gist::2Gist.create(args['file'])
+    
 rescue Docopt::Exit => e
   puts e.message
 end
 
-
-uri = URI.parse("https://api.github.com/authorizations")
-http = Net::HTTP.new(uri.hostname, uri.port)
-http.use_ssl = true
-request = Net::HTTP::Post.new(uri.path)
-request.basic_auth 'ammoses89', ''
-request.body = {"scopes" => "gist", "note" => "2gist"}.to_json
-
-
-response = http.request(request)
-
-puts response.body
