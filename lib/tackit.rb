@@ -1,39 +1,52 @@
 require 'docopt'
 require 'pp'
+require 'highline/import'
 
 
 doc = <<DOCOPT
 
 Usage:
-  #{__FILE__} upload <file> [<file>...]
-  #{__FILE__} connect <username> <password>
+  #{__FILE__} create <file> [<file>...]
   #{__FILE__} list
 DOCOPT
 
 
 module Tackit
+  PREFIX = File.dirname(__FILE__)
   ROOT = File.expand_path('../', __FILE__)
   
-  require 'tackit/version.rb'
-  require 'tackit/user.rb'
-  require 'tackit/token.rb'
-  require 'tackit/gist.rb'
+  puts ROOT
+  
+  require File.join(ROOT, 'tackit/version.rb')
+  require File.join(ROOT, '/tackit/user.rb')
+  require File.join(ROOT, '/tackit/token.rb')
+  require File.join(ROOT, '/tackit/gist.rb')
   
   class Tackit
-  
+    
     def initialize
+      @user = nil
+      @gist = nil
     end
 
     def list
+      unless @user
+        connect()
+      end
       @gist
     end
 
     def create(file)
+      unless @user
+        connect()
+      end
       @gist.create_gist()
     end
 
-    def connect(user, pass)
-      @user = User.new(user, pass)
+    def connect
+      user = ask 'Github Username: '
+      pass = ask 'Password: '
+       @user = User.new(user, pass)
       unless @user.has_token?
         @user.get_auth
       end
@@ -44,15 +57,13 @@ end
 
 begin
   pp Docopt::docopt(doc)
-  '''
   args = Docopt::docopt(doc)
-  if(args["username"])
-    Tackit::Tackit.connect(args["username"], args["password"])
-  elsif(args["file"])
-    Tackit::Tackit.create(args["file"])
+  tackit = Tackit::Tackit.new
+  if(args['create'])
+    tackit.create(args['file'])
   else
-    Tackit::Tackit.list()
-    '''
+    tackit.list()
+  end
 rescue Docopt::Exit => e
   puts e.message
 end

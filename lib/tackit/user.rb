@@ -4,7 +4,8 @@ module Tackit
     def initialize(user, pass)
       @user = user
       @pass = pass
-      @token = Token.find_token(@user, @pass)
+      @token = Token.new.find_token(@user, @pass)
+    end
     
     def has_token?
       @token
@@ -12,7 +13,7 @@ module Tackit
     
     def get_auth_token
       @token = Gist.authorize(@user, @pass)
-      Token.save_token(@user, @pass, @token)
+      Token.new.save_token(@user, @pass, @token)
     end
   end
 end
