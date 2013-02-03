@@ -1,3 +1,3 @@
-module 2Gist
+module Tackit
   VERSION = '0.0.1'
 end
