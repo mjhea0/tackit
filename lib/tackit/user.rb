@@ -14,6 +14,7 @@ module Tackit
     def get_auth_token
       @token = Gist.authorize(@user, @pass)
       Token.new.save_token(@user, @pass, @token)
+      @token
     end
   end
 end

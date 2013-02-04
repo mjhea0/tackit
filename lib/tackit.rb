@@ -15,32 +15,29 @@ module Tackit
   PREFIX = File.dirname(__FILE__)
   ROOT = File.expand_path('../', __FILE__)
   
-  puts ROOT
-  
   require File.join(ROOT, 'tackit/version.rb')
-  require File.join(ROOT, '/tackit/user.rb')
-  require File.join(ROOT, '/tackit/token.rb')
-  require File.join(ROOT, '/tackit/gist.rb')
+  require File.join(ROOT, 'tackit/user.rb')
+  require File.join(ROOT, 'tackit/token.rb')
+  require File.join(ROOT, 'tackit/gist.rb')
   
   class Tackit
     
     def initialize
       @user = nil
-      @gist = nil
     end
 
     def list
       unless @user
-        connect()
+        token = connect()
       end
-      @gist
+      Gist.list_gist(token)
     end
 
-    def create(file)
+    def create(files)
       unless @user
-        connect()
+        token = connect()
       end
-      @gist.create_gist()
+      Gist.create_gist(token, files)
     end
 
     def connect
@@ -48,7 +45,9 @@ module Tackit
       pass = ask 'Password: '
        @user = User.new(user, pass)
       unless @user.has_token?
-        @user.get_auth
+        token = @user.get_auth_token
+      else
+        @user.has_token?
       end
     end
     
@@ -60,7 +59,7 @@ begin
   args = Docopt::docopt(doc)
   tackit = Tackit::Tackit.new
   if(args['create'])
-    tackit.create(args['file'])
+    tackit.create(args['<file>'])
   else
     tackit.list()
   end

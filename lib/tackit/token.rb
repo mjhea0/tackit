@@ -12,7 +12,15 @@ module Tackit
     
     def find_token(user, pass)
       hash = get_hash(pass)
-      yaml_obj = YAML.load(hash)
+      File.exist?("./#{hash}.yaml")
+      #yaml_obj = YAML.load('./#{hash}.yaml')
+      #puts yaml_obj
+    end
+    
+    def get_token(user, pass)
+      hash = get_hash(pass)
+      yaml_obj = YAML.load("./#{hash}.yaml")
+      yaml_obj[:token]
     end
     
     def save_token(user, pass, token)
@@ -21,9 +29,9 @@ module Tackit
         :user => user, 
         :pass => pass, 
         :token => token, 
-        :date => Date.now 
+        :date => Date.today.to_s 
       }
-      File.open(hash, 'w') do |file|
+      File.open("./#{hash}.yaml", 'w') do |file|
         file.write(cred.to_yaml)
       end
     end
