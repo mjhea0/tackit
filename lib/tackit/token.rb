@@ -13,8 +13,6 @@ module Tackit
     def find_token(user, pass)
       hash = get_hash(pass)
       File.exist?("./#{hash}.yaml")
-      #yaml_obj = YAML.load('./#{hash}.yaml')
-      #puts yaml_obj
     end
     
     def get_token(user, pass)
